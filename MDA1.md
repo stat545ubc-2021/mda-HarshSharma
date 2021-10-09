@@ -49,5 +49,9 @@ The `datateachr` is comprised of the 7 semi-tidy datasets:
 following:**
 
 1.  building\_permits: Working for a regulatory agency, I have prior
-    experience working in compliance of permits and licenses
-2.  
+    experience working in compliance of permits and licenses.
+
+2.  cancer\_sample:
+
+3.  vancouver\_trees: Interesting dataset that may be leverage-able to
+    assess the effects of climate change
