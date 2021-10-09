@@ -2,7 +2,7 @@
 title: "Mini Data Analysis: Report 1"
 author: "Harsh Sharma"
 date: "09/10/2021"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
