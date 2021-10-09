@@ -1,4 +1,4 @@
-#ReadME
+# ReadME
 
 ## Overview
 This is a individual project for UBC course *[STAT 545A](https://stat545.stat.ubc.ca/syllabus-545a/)*. The central objective is to perform exploratory data analysis using R and GitHub workflow. The focus is to perform the analysis using best practices for clean code writing, reproducibility, and thinking clarity in order to impact and engage the reader productively. Project is trifurcated; progress as of 9<sup>th</sup> October 2021:
