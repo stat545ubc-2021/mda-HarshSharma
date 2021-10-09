@@ -9,10 +9,37 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Overview
+This report includes the exploratory data analysis performed on a dataset chosen from the `datateacher` package. Incremental effort will be placed in familiarizing with different data sets to finally choose one, and four research questions will formulated around it.
 
-First we need to load the two following packages:
+## Set-up
+First we need to load the following two packages:
 
 ```{r, message=FALSE}
 library(datateachr)
 library(tidyverse)
 ```
+
+The `datateachr` is comprised of the 7 semi-tidy datasets:
+
+> 1. apt_buildings: Acquired courtesy of The City of Toronto’s Open Data Portal. It currently has 3455 rows and 37 columns.
+
+> 2. building_permits: Acquired courtesy of The City of Vancouver’s Open Data Portal. It currently has 20680 rows and 14 columns.
+
+> 3. cancer_sample: Acquired courtesy of UCI Machine Learning Repository. It currently has 569 rows and 32 columns.
+
+> 4. flow_sample: Acquired courtesy of The Government of Canada’s Historical Hydrometric Database. It currently has 218 rows and 7 columns.
+
+> 5. parking_meters: Acquired courtesy of The City of Vancouver’s Open Data Portal. It currently has 10032 rows and 22 columns.
+
+> 6. steam_games: Acquire d courtesy of Kaggle. It currently has 40833 rows and 21 columns.
+
+> 7. vancouver_trees: Acquired courtesy of The City of Vancouver’s Open Data Portal. It currently has 146611 rows and 20 columns.
+
+## Task 1: Dataset Selection
+
+**1.1 Based on the descriptions, I narrow down my intial choices to the following:**
+
+1. building_permits:
+Working for a regulatory agency, I have prior experience working in compliance of permits and licenses
+2. 
