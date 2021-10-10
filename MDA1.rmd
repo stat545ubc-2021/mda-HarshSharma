@@ -48,6 +48,22 @@ Based on the descriptions, I narrow down my intial choices to the following:
 
 4. *vancouver_trees:* interesting dataset that may be leverage-able to assess the effects of climate change and/or rate of planting by the city
 
+## Task 1.2: Introductory Dataset Exploration
+In this section, we will individually perform introductory exploration into the four chosen datasets using dyplr to find the associated data attributes. This will enhance the understanding about the information contained within each dataset and enable a more informed decision.
+
+#### Building Permits
+
+```{r}
+glimpse(building_permits)
+```
+
+#### Cancer Sample
+
+#### Parking Meters
+
+#### Vancouver Trees
+
+
 ## Task 1.3: Intermediate Dataset Selection
 
 Based on the above I further limit my choices to the following top contenders:
