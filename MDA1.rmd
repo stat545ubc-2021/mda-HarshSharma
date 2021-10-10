@@ -16,6 +16,10 @@ This report includes the exploratory data analysis performed on a dataset chosen
 First we need to load the following two packages:
 
 ```{r, message=FALSE}
+# Installing packages if missing, required only once
+# install.packages("devtools")
+# devtools::install_github("UBC-MDS/datateachr")
+
 library(datateachr)
 library(tidyverse)
 ```
@@ -54,26 +58,124 @@ In this section, we will individually perform introductory exploration into the 
 #### Building Permits
 
 ```{r}
+# Provides a glimpse into the data, showing:
+# Dataframe dimensions, columns, and data types 
 glimpse(building_permits)
 ```
+```{r}
+# Function to provides result summaries
+# Very Helpful for nominal and ordinal data
+summary(building_permits)
+```
+```{r}
+# Summarizing permit count by year
+building_permits %>% 
+  group_by(year) %>%
+  summarise(n=n())
+```
+```{r}
+# Finding the different permit types
+distinct(building_permits, type_of_work)
+```
+**Notable Observation:** There are 52 missing numerical values.
 
 #### Cancer Sample
 
+```{r}
+# Provides a glimpse into the data, showing:
+# Dataframe dimensions, columns, and data types 
+glimpse(cancer_sample)
+```
+```{r}
+# Function to provides result summaries
+# Very Helpful for nominal and ordinal data
+summary(cancer_sample)
+```
+```{r}
+# Finding the types of diagnosis
+distinct(cancer_sample, diagnosis)
+```
+```{r}
+# Checking the difference in mean radius between two diagnosis types 
+cancer_sample %>% 
+  group_by(diagnosis) %>%
+  summarize(meanRadius=mean(radius_mean))
+```
+
+**Notable Observation:** There is discernable difference between mean radius of begnin and malignant tumor - and this variable can be used in classifying. Since we have only two types of values for diagnosis these will act as factors
+
 #### Parking Meters
 
+```{r}
+# Provides a glimpse into the data, showing:
+# Dataframe dimensions, columns, and data types 
+glimpse(parking_meters)
+```
+```{r}
+# Function to provides result summaries
+# Very Helpful for nominal and ordinal data
+summary(parking_meters)
+```
+
+```{r}
+# List of different meter heads
+distinct(parking_meters, meter_head)
+```
+```{r}
+# Alphabetically arranged list of meter counts by location area 
+parking_meters %>% 
+  group_by(geo_local_area) %>%
+  arrange(geo_local_area) %>%
+  summarize(n=n())
+```
+
 #### Vancouver Trees
+
+```{r}
+# Provides a glimpse into the data, showing:
+# Dataframe dimensions, columns, and data types 
+glimpse(vancouver_trees)
+```
+```{r}
+# Function to provides result summaries
+# Very Helpful for nominal and ordinal data
+summary(vancouver_trees)
+```
+```{r}
+# List of different street sides where trees are present
+distinct(vancouver_trees, street_side_name)
+```
+```{r}
+# Checking the difference in mean diameter between different genus tree types 
+vancouver_trees %>% 
+  group_by(genus_name) %>%
+  summarize(meanDiameter=mean(diameter, na.rm=TRUE))
+```
+```{r}
+# Determining distinct genus-specie pairs
+distinct(vancouver_trees, genus_name, species_name)
+```
+
+**Notable Observation:** There are 361 different pairs of genus-species combinations. This introduces the possible risk of class imbalance, however, there are significant observations (146611) available. Further analysis into the data distribution can highlight imbalance issues, if present.
 
 
 ## Task 1.3: Intermediate Dataset Selection
 
-Based on the above I further limit my choices to the following top contenders:
+Based on the above I further limit my choices to the top two contenders:
 
-1.  cancer_sample
+1. *cancer_sample*
+2. *parking_meter*
 
-2. 
+I have chosen the above due to the dataset being highly numerical values. The parking_meter does have significant textual data such as '2 Hr' but it can easily be converted to numerical value by truncating the 'Hr'. Other textual data, such as geographical area, can be easily one hot encoded. Translating to numerical data will allow more detailed analysis and also allow wider plotting options which is focus of this exercise.
+
+Further, both have a personal appeal to me. Cancer_sample dataset is very interesting as it provides actual medical data, which is difficult to obtain. Parking_meters data set is also very interesting given my work in regional transportation analysis.
 
 ## Task 1.4: Final Dataset Selection
 
 In order to make the concluding dataset choice, it is important to consider the end result i.e. the associated research question. This will help gauge the project that is most appealing. Following are my research questions:
 
-1. cancer_sample
+1. **cancer_sample:** Can certain attribute(s) be identified, such as mean radius, that can (binarily) classify between malignant and benign tumors?
+
+2. **parking_meter:** Is there a general trend(s) in parking price change throughout the 24 hour period?
+
+Finally, I select cancer_sample dataset as it's the closest to my future study area and personally the premise, being related to impacting the health sector, is  most strong.
