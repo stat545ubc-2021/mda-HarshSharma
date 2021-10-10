@@ -642,14 +642,23 @@ the health sector, is the strongest. Moreover, I have few interesting
 ideas on mapping and analyzing the different shape variables (dependent
 variables) based on my knowledge of analytic geometry.
 
-## Task 2.1: Detailed Exploration of cancer\_sample
+## Task 2: Detailed Exploration and Reasoning for plot choices
 
 The following four exercises help investigate the dataset into more
 detail - highlighting insights, data characteristics, and trends that
 will assist in formulating our research questions in the following
 section.
 
-#### 2.1.1: Plotting distribution of numeric variable ‘radius\_mean’
+#### 2.1.1: Plotting distribution of numeric variable ‘radius\_mean’ between the two (response) classes
+
+-   This dataset comprises mostly of numerical values, hence, it was
+    clear to chose this excercise.
+-   Further, the variable ‘radius\_mean’ was chosen foremost based on
+    intuition as generally speaking cancer cells are larger in size.
+-   Finally, a density plot was chosen over the likes of scatter or line
+    plot as our response variable is binary (classification) and not
+    numerical (regression). Thus, a density plot much better reveals the
+    distribution of radius\_mean across the output categories.
 
 ``` r
 cancer_sample %>%
@@ -657,7 +666,75 @@ cancer_sample %>%
   geom_density(aes(fill=diagnosis, alpha=0.3))
 ```
 
-![](MDA1_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+![](MDA1_files/figure-gfm/unnamed-chunk-23-1.png)<!-- --> It is
+interesting to note that there is a correlation between radius\_mean and
+diagnosis classification. However, since there is also a significant
+overlap in values across the classifications it means we need to add
+other appropriate variables to our model.
+
+#### 2.1.4.a: Exploring the relashionship between two variables ‘radius\_mean’ and ‘symmetry\_mean’
+
+-   Next, I wanted to explore relationships between variables that are
+    not closely related (such as radius and area). Thus, inquiring if
+    larger (malignant) cells are very different from smaller (benign)
+    cells in regards to symmetry.
+-   A scatter plot is applicable for this as it will easily highlight
+    the degree of correlation between two numerical variables.
+
+``` r
+cancer_sample %>%
+  ggplot(aes(radius_mean, symmetry_mean))+
+  geom_point(aes(colour=diagnosis, size=0.5, alpha=0.2))
+```
+
+![](MDA1_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+
+It can be seen that there is not a strong relationship
+(i.e. correlation) between ‘radius\_mean’ and ‘symmetry\_mean’. Thus,
+below we explore another variable with respect to ‘radius\_mean’.
+
+#### 2.1.4.b: Exploring the relashionship between two variables ‘radius\_mean’ and ‘concave\_points\_mean’
+
+``` r
+cancer_sample %>%
+  ggplot(aes(radius_mean, concave_points_mean))+
+  geom_point(aes(colour=diagnosis, size=0.5, alpha=0.2))
+```
+
+![](MDA1_files/figure-gfm/unnamed-chunk-25-1.png)<!-- --> It can be seen
+that there is a strong relationship (i.e. correlation) between
+‘radius\_mean’ and ‘concave\_points\_mean’.
+
+#### 2.1.6: Using boxplot to examine frequency of variable ‘area\_mean’
+
+-   Boxplots provide a lot of detail on numerical attributes and are
+    thus selected to contrast the ‘radius\_mean’ which is already shown
+    above to be a stron dependant variable.
+
+``` r
+cancer_sample %>%
+  ggplot(aes(diagnosis, area_mean))+
+  geom_boxplot(width=0.3)
+```
+
+![](MDA1_files/figure-gfm/unnamed-chunk-26-1.png)<!-- --> \#\#\#\#
+2.1.8: Using density plot to explore related variables ‘radius\_mean’,
+‘radius\_se’, and ‘radius\_worst’
+
+-   Density plots are very applicable for my dataset as they compare the
+    dependant variables nicely across the two classification outputs.
+    Thus using another density plot to investigate suitability of
+    variable ‘fractal\_dimension-mean’.
+
+``` r
+cancer_sample %>%
+  ggplot(aes(fractal_dimension_mean))+
+  geom_density(aes(fill=diagnosis, alpha=0.3))
+```
+
+![](MDA1_files/figure-gfm/unnamed-chunk-27-1.png)<!-- --> Having an
+almost identical distribution overlapping on each other, shows us that
+‘fractal\_dimension\_mean’ is not a strong dependant variable.
 
 ## Task 3: Research Questions
 
