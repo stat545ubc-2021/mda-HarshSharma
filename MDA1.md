@@ -77,6 +77,13 @@ contained within each dataset and enable a more informed decision.
 #### Building Permits
 
 ``` r
+# Checking the object type of data frame 
+class(building_permits)
+```
+
+    ## [1] "spec_tbl_df" "tbl_df"      "tbl"         "data.frame"
+
+``` r
 # Provides a glimpse into the data, showing:
 # Dataframe dimensions, columns, and data types 
 glimpse(building_permits)
@@ -171,6 +178,13 @@ distinct(building_permits, type_of_work)
 **Notable Observation:** There are 52 missing numerical values.
 
 #### Cancer Sample
+
+``` r
+# Checking the object type of data frame 
+class(cancer_sample)
+```
+
+    ## [1] "spec_tbl_df" "tbl_df"      "tbl"         "data.frame"
 
 ``` r
 # Provides a glimpse into the data, showing:
@@ -308,6 +322,13 @@ will act as factors
 #### Parking Meters
 
 ``` r
+# Checking the object type of data frame 
+class(parking_meters)
+```
+
+    ## [1] "tbl_df"     "tbl"        "data.frame"
+
+``` r
 # Provides a glimpse into the data, showing:
 # Dataframe dimensions, columns, and data types 
 glimpse(parking_meters)
@@ -434,6 +455,13 @@ parking_meters %>%
     ## 18 West Point Grey            177
 
 #### Vancouver Trees
+
+``` r
+# Checking the object type of data frame 
+class(vancouver_trees)
+```
+
+    ## [1] "tbl_df"     "tbl"        "data.frame"
 
 ``` r
 # Provides a glimpse into the data, showing:
@@ -581,18 +609,18 @@ Based on the above I further limit my choices to the top two contenders:
 1.  *cancer\_sample*
 2.  *parking\_meter*
 
-I have chosen the above due to the dataset being highly numerical
-values. The parking\_meter does have significant textual data such as ‘2
-Hr’ but it can easily be converted to numerical value by truncating the
-‘Hr’. Other textual data, such as geographical area, can be easily one
-hot encoded. Translating to numerical data will allow more detailed
-analysis and also allow wider plotting options which is focus of this
-exercise.
+I have chosen the above due to the datasets containing a significant
+portion as numerical values. The parking\_meter does have significant
+textual data such as ‘2 Hr’ but it can easily be converted to numerical
+value by truncating the ‘Hr’. Other textual data, such as geographical
+area, can be easily one hot encoded. Translating to numerical data will
+allow more detailed analysis and also allow wider plotting options which
+is focus of this exercise.
 
 Further, both have a personal appeal to me. Cancer\_sample dataset is
-very interesting as it provides actual medical data. Parking\_meters
-data set is also very interesting given my work in regional
-transportation analysis.
+very interesting as it provides actual medical data, which is difficult
+to obtain. Parking\_meters data set is also very interesting given my
+work in regional transportation analysis.
 
 ## Task 1.4: Final Dataset Selection
 
@@ -610,4 +638,43 @@ questions:
 
 Finally, I select cancer\_sample dataset as it’s the closest to my
 future study area and personally the premise, being related to impacting
-the health sector, is most strong.
+the health sector, is the strongest. Moreover, I have few interesting
+ideas on mapping and analyzing the different shape variables (dependent
+variables) based on my knowledge of analytic geometry.
+
+## Task 2.1: Detailed Exploration of cancer\_sample
+
+The following four exercises help investigate the dataset into more
+detail - highlighting insights, data characteristics, and trends that
+will assist in formulating our research questions in the following
+section.
+
+#### 2.1.1: Plotting distribution of numeric variable ‘radius\_mean’
+
+``` r
+cancer_sample %>%
+  ggplot(aes(radius_mean))+
+  geom_density(aes(fill=diagnosis, alpha=0.3))
+```
+
+![](MDA1_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+
+## Task 3: Research Questions
+
+1.  **Given the set of variables, can a model be generated to classify
+    the binary response variable of malignant or benign?**
+
+2.  **Is (variable) data distribution and characteristics comparable
+    between the benign and malignant classes?**
+
+3.  **What variables have the strongest correlations to the response
+    variable?** Which next leads us to finding the optimized set of
+    variables having the highest model performance. This inherently
+    involves analyzing the three associated columns for the same
+    parameter (example: radius\_mean, radius\_se, radius\_worst) in
+    order to minimize redundancy.
+
+4.  In this situation it is better to have a false positive than a false
+    negative. Thus, we should **identify what variable leads to the
+    highest model sensitivity**. This can also aid in incorporating
+    noise/probabilistic modelling in the future.
