@@ -43,15 +43,40 @@ The `datateachr` is comprised of the 7 semi-tidy datasets:
 > 7.  vancouver\_trees: Acquired courtesy of The City of Vancouver’s
 >     Open Data Portal. It currently has 146611 rows and 20 columns.
 
-## Task 1: Dataset Selection
+## Task 1.1: Priliminary Dataset Selection
 
-**1.1 Based on the descriptions, I narrow down my intial choices to the
-following:**
+Based on the descriptions, I narrow down my intial choices to the
+following:
 
-1.  building\_permits: Working for a regulatory agency, I have prior
+1.  *building\_permits:* working for a regulatory agency, I have prior
     experience working in compliance of permits and licenses.
 
-2.  cancer\_sample:
+2.  *cancer\_sample:* I am interested to pursue my research in a field
+    related to algorithms employed in healthcare digital images so this
+    seems very meaningful and applicable
 
-3.  vancouver\_trees: Interesting dataset that may be leverage-able to
-    assess the effects of climate change
+3.  *parking\_meters:* having worked for Translink, this may be an
+    interesting dataset to probe into parking trends and by extension
+    into travel behavior
+
+4.  *vancouver\_trees:* interesting dataset that may be leverage-able to
+    assess the effects of climate change and/or rate of planting by the
+    city
+
+## Task 1.3: Intermediate Dataset Selection
+
+Based on the above I further limit my choices to the following top
+contenders:
+
+1.  cancer\_sample
+
+2.  
+
+## Task 1.4: Final Dataset Selection
+
+In order to make the concluding dataset choice, it is important to
+consider the end result i.e. the associated research question. This will
+help gauge the project that is most appealing. Following are my research
+questions:
+
+1.  cancer\_sample
