@@ -54,9 +54,9 @@ Following are the research questions formulated in Report1:
     sensitivity**. In this problem setting it is better to have a false
     positive than a false negative.
 
-**PS:** Research question 4 has been replaced in the follwong section
-due to better alignment with this report’s instruction and also the
-course scope.
+*PS: Research question 4 has been replaced in the follwong section due
+to better alignment with this report’s instruction and also the course
+scope.*
 
 ### Task 1.2: In-depth EDA
 
@@ -69,16 +69,77 @@ Computing the summary statistic of numeric variable ‘radius\_mean’
 across the categorical variable ‘diagnosis’:
 
 ``` r
-# We need to first group by diagnosis
+# First grouping by diagnosis
+# Using dyplr::unite() to output range as asked in question
 cancer_sample %>%
   group_by(diagnosis) %>%
-  summarize(min_value=min(radius_mean), max_value=max(radius_mean), mean=mean(radius_mean,na.rm=TRUE),median=median(radius_mean), sd=sd(radius_mean))
+  summarize(min_value=min(radius_mean), max_value=max(radius_mean), mean=mean(radius_mean,na.rm=TRUE),median=median(radius_mean), sd=sd(radius_mean)) %>%
+  unite(range, min_value, max_value, sep="-")
 ```
 
-    ## # A tibble: 2 x 6
-    ##   diagnosis min_value max_value  mean median    sd
-    ##   <chr>         <dbl>     <dbl> <dbl>  <dbl> <dbl>
-    ## 1 B              6.98      17.8  12.1   12.2  1.78
-    ## 2 M             11.0       28.1  17.5   17.3  3.20
+    ## # A tibble: 2 x 5
+    ##   diagnosis range        mean median    sd
+    ##   <chr>     <chr>       <dbl>  <dbl> <dbl>
+    ## 1 B         6.981-17.85  12.1   12.2  1.78
+    ## 2 M         10.95-28.11  17.5   17.3  3.20
+
+Graphing mean\_radius with at least two geom layers:
+
+``` r
+# Using classic theme to maximize pixed-info ratio per best practices 
+cancer_sample %>%
+  ggplot(aes(diagnosis, radius_mean))+
+  geom_boxplot(width=0.2)+
+  geom_jitter(alpha=0.1, width=0.2)+
+  theme_classic()
+```
+
+![](MDA2_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+The above results clearly indicate discernible difference in variable
+‘radius\_mean’ across begnin and malignant diagnosis. This is strong
+indicator that binary classification is possible.
+
+#### Question2 - Comparing begnin and malignant data distribution
+
+Computing the number of observations for categorical variable
+‘diagnosis’:
+
+``` r
+# Without using table() as the output is not data frame
+cancer_sample %>%
+  group_by(diagnosis) %>%
+  tally()
+```
+
+    ## # A tibble: 2 x 2
+    ##   diagnosis     n
+    ##   <chr>     <int>
+    ## 1 B           357
+    ## 2 M           212
+
+Plotting graph of choice:
+
+``` r
+cancer_sample %>%
+  ggplot(aes(x=factor(1), fill=diagnosis))+
+  geom_bar()+
+  coord_polar(theta="y")+
+  scale_fill_grey()+
+  theme_minimal()+
+  theme(axis.title.y = element_blank())
+```
+
+![](MDA2_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+The above graph is appropriate for the research question2. However,
+additional graph is plotted since the instructions require logarithmic
+axis scale:
+
+``` r
+cancer_sample %>%
+  ggplot()+
+  geom_point()
+```
 
 ### Task1.3: Learning
