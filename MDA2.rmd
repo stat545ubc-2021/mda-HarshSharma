@@ -1,0 +1,71 @@
+---
+title: "Mini Data Analysis: Report 2"
+author: "Harsh Sharma"
+date: "21/10/2021"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview
+This report continues the exploratory data analysis performed in Report1 on the 'cancer_dataset' chosen from the `datateacher` package. Incremental effort will be placed in exploring in more detail the dataset in a fashion that will lead to geenrating insights to answer the research questions.
+
+## Set-up
+First we need to load the following two packages:
+
+```{r, message=FALSE}
+# Installing packages if missing, required only once
+# install.packages("devtools")
+# devtools::install_github("UBC-MDS/datateachr")
+
+library(datateachr)
+library(tidyverse)
+```
+
+## Task1: Processing and Summarizing Data
+
+```{r, include=FALSE, message=FALSE}
+# Supporting in-line code below
+dim <- dim(cancer_sample)
+class <- class(cancer_sample)
+```
+
+From earlier analysis we know the cancer_dataset has the following high level characteristics:
+
+  - Shape is: `r dim`
+  
+  - Data class is: `r class`
+  
+### Task 1.1: Research Questions
+
+Following are the research questions formulated in Report1:
+
+1. **Can a binary (malignant or benign) classification model be generated the given variables and dataset?**
+
+2.  **Is data distribution/characteristics comparable between the benign and malignant classes?**
+
+3.  **What variable(s) have the strongest correlations to the response variable?**
+Which next leads us to finding the optimized set of variables having the highest model performance. This inherently involves analyzing the three associated columns for the same parameter (example: radius\_mean, radius\_se, radius\_worst) in order to minimize redundancy.
+
+4.  **Identifying what variable(s) contributes to the highest model sensitivity**.
+In this problem setting it is better to have a false positive than a false negative.
+
+**PS:** Research question 4 has been replaced in the follwong section due to better alignment with this report's instruction and also the course scope.
+
+### Task 1.2: In-depth EDA
+In this section atleast one summarizing and one graphing task is attempted per research question.
+
+#### Question1 - Generating binary classification model
+Computing the summary statistic of numeric variable 'radius_mean' across the categorical variable 'diagnosis':
+
+```{r}
+# We need to first group by diagnosis
+cancer_sample %>%
+  group_by(diagnosis) %>%
+  summarize(min_value=min(radius_mean), max_value=max(radius_mean), mean=mean(radius_mean,na.rm=TRUE),median=median(radius_mean), sd=sd(radius_mean))
+```
+
+
+### Task1.3: Learning
