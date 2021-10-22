@@ -408,9 +408,13 @@ for my research questions. This is because:
 ### Task 2.2: Reshaping my dataset
 
 I will make my dataset untidy (for my research questions) by making the
-tibble longer. For every parameter (such as radius, area, etc.) I will
-combine the three related cols ’\_mean’, ’\_se’ and ’\_worst’ into one
-column. Thus, for This will result in 12 cols from 32 cols originally.
+tibble longer. I will collapse all features (such as radius\_mean,
+area\_se, etc.) into one column. In another column I will have the
+(numerical) values associated to those features. Thus, this will result
+in a tibble with only 4 columns, with each row representing only one
+parameter of a single observation. That is, one row, will no longer have
+one complete observation data; which will be distributed over multiple
+rows (three to be exact).
 
 ``` r
 (cancer_long <- cancer_sample %>%
