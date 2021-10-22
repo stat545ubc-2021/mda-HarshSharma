@@ -16,8 +16,10 @@ This is a individual project for UBC course *[STAT 545A](https://stat545.stat.ub
   
 
 ## Project Files
-1. *[MDA1](/MDA1.md)*: Report rendered in Github friendly format.
-2. *[MDA1.rmd](/MDA1.rmd)*: Corresponding file containing the `R` code for the analysis.
+1. *[MDA1](/MDA1.md)*: Report1 rendered in Github friendly format.
+2. *[MDA1.rmd](/MDA1.rmd)*: Corresponding file containing the `R` code for the report1 analysis.
+3. *[MDA2](/MDA2.md)*: Report2 rendered in Github friendly format.
+4. *[MDA2.rmd](/MDA2.rmd)*: Corresponding file containing the `R` code for the report2 analysis.
 
 ## Code execution
 The corrected code can be run from files *[MDA2](/MDA2.Rmd)* using `R` software along with additional packages such as `tidyverse`, `devtools`, and specifically  `datateacher`. Using an IDE such as `RStudio` carries out this task easily.

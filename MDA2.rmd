@@ -127,11 +127,11 @@ The above graph-being not a straight line-and having fairly distinct regions for
 ```{r}
 # Adding column for categorization of 'concavity_mean' into 4 buckets
 
-cancer_categ <- cancer_sample %>%
+(cancer_categ <- cancer_sample %>%
   mutate(concavity_mean_level = case_when(concavity_mean<0.04 ~ "Low",
                                          concavity_mean<0.08 ~ "Normal",
                                          concavity_mean<0.12 ~ "High",
-                                         TRUE ~ "Very High"))
+                                         TRUE ~ "Very High")))
 ```
 
 Re-plotting using categorized variable 'concavity_mean_levels':
