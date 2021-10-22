@@ -54,13 +54,13 @@ Following are the research questions formulated in Report1:
     sensitivity**. In this problem setting it is better to have a false
     positive than a false negative.
 
-*PS: Research question 4 has been replaced in the follwong section due
-to better alignment with this report’s instruction and also the course
-scope.*
+*PS: Research question 4 has been replaced in the following section due
+to better alignment with this report’s instruction requirement and also
+the course scope.*
 
 ### Task 1.2: In-depth EDA
 
-In this section atleast one summarizing and one graphing task is
+In this section, at least one summarizing and one graphing task is
 attempted per research question.
 
 #### Question1 - Generating binary classification model
@@ -71,6 +71,7 @@ attempted per research question.
 ``` r
 # First grouping by diagnosis
 # Using dyplr::unite() to output range as asked in question
+
 cancer_sample %>%
   group_by(diagnosis) %>%
   summarize(min_value=min(radius_mean), max_value=max(radius_mean), mean=mean(radius_mean,na.rm=TRUE),median=median(radius_mean), sd=sd(radius_mean)) %>%
@@ -87,6 +88,7 @@ cancer_sample %>%
 
 ``` r
 # Using classic theme to maximize pixel-info ratio per best practices 
+
 cancer_sample %>%
   ggplot(aes(diagnosis, radius_mean))+
   geom_boxplot(width=0.2)+
@@ -109,6 +111,7 @@ indicator that binary classification is possible.
 
 ``` r
 # Without using table() as the output is not data frame
+
 cancer_sample %>%
   group_by(diagnosis) %>%
   tally()
@@ -171,6 +174,7 @@ in next report, we will summarize for all variables.
 
 ``` r
 # Adding column for categorization of 'concavity_mean' into 4 buckets
+
 cancer_categ <- cancer_sample %>%
   mutate(concavity_mean_level = case_when(concavity_mean<0.04 ~ "Low",
                                          concavity_mean<0.08 ~ "Normal",
@@ -182,6 +186,7 @@ Re-plotting using categorized variable ‘concavity\_mean\_levels’:
 
 ``` r
 # Using factors for visual appeal by having ascending order in bar proportion
+
 cancer_categ %>%
   mutate(concavity_mean_level= factor(concavity_mean_level, levels = c("Low","Normal","High","Very High"))) %>%
   ggplot(aes(x = concavity_mean_level, fill=diagnosis))+
@@ -198,6 +203,7 @@ another variable ‘concave\_points\_mean’:
 
 ``` r
 #Bin size count is 20
+
 cancer_sample %>%
   ggplot(aes(x = concave_points_mean, color=diagnosis))+
   geom_histogram(fill="white", bins = 20)+
@@ -208,6 +214,7 @@ cancer_sample %>%
 
 ``` r
 #Bin size count is 30
+
 cancer_sample %>%
   ggplot(aes(x = concave_points_mean, color=diagnosis))+
   geom_histogram(fill="white", bins = 30)+
@@ -218,6 +225,7 @@ cancer_sample %>%
 
 ``` r
 #Bin size count is 60
+
 cancer_sample %>%
   ggplot(aes(x = concave_points_mean, color=diagnosis))+
   geom_histogram(fill="white", bins = 60)+
@@ -338,28 +346,216 @@ variance, it is recommended to carry both these variables forward for
 further analysis in report 3, in consideration of including in the model
 features.
 
-### Task1.3: Learning
+### Task 1.3: Learning
 
 In summary, I have systematically examined:
 
 -   The dataset at a high level (noting there are no missing values).
-
 -   The various variables present and the possibility for them to act as
     features
-
 -   The relationship between various independent variables that indicate
     a good performing model is possible
 
 I am now certain of the research questions (1 question was updated).
 Most interesting result was obtained by comparing the two classification
-groups; which highlighted linear relationships within the group but
-differed in rate of change compared intra-group.
+groups; which highlighted linear relationships within the group but one
+that differed in rate of change compared intra-group.
 
 **Next steps:**
 
 -   Repeated some of the above steps for other variables and summarize
     outcomes quantitatively
-
 -   Use statistical model and set parameters using the outcomes from
     above step to answer the central research question1 (binary
     classification)
+
+## Task 2: Tidy Your Data
+
+This section focus on reshaping data using the `tidyr` package in order
+to simplify computation.
+
+### Task 2.1: Sate of my dataset
+
+My entire dataset (cancer\_sample) was by default present in tidy form
+for my research questions. This is because:
+
+-   Each row was an observation (incl. the response variable
+    malignant/benign on individual row)
+-   All columns represented variables
+-   Each cell was (a particular) value
+
+### Task 2.2: Reshaping my dataset
+
+I will make my dataset untidy (for my research questions) by making the
+tibble longer. For every parameter (such as radius, area, etc.) I will
+combine the three related cols ’\_mean’, ’\_se’ and ’\_worst’ into one
+column. Thus, for This will result in 12 cols from 32 cols originally.
+
+``` r
+(cancer_long <- cancer_sample %>%
+   pivot_longer(cols     = c(-ID, -diagnosis), 
+               names_to  = "feature",
+               values_to = "numerical_value"))
+```
+
+    ## # A tibble: 17,070 x 4
+    ##        ID diagnosis feature                numerical_value
+    ##     <dbl> <chr>     <chr>                            <dbl>
+    ##  1 842302 M         radius_mean                    18.0   
+    ##  2 842302 M         texture_mean                   10.4   
+    ##  3 842302 M         perimeter_mean                123.    
+    ##  4 842302 M         area_mean                    1001     
+    ##  5 842302 M         smoothness_mean                 0.118 
+    ##  6 842302 M         compactness_mean                0.278 
+    ##  7 842302 M         concavity_mean                  0.300 
+    ##  8 842302 M         concave_points_mean             0.147 
+    ##  9 842302 M         symmetry_mean                   0.242 
+    ## 10 842302 M         fractal_dimension_mean          0.0787
+    ## # ... with 17,060 more rows
+
+Now tidying the data back again:
+
+``` r
+(cancer_sample <- cancer_long %>%
+   pivot_wider(id_cols     = c(ID, diagnosis), 
+               names_from  = "feature",
+               values_from = "numerical_value"))
+```
+
+    ## # A tibble: 569 x 32
+    ##          ID diagnosis radius_mean texture_mean perimeter_mean area_mean
+    ##       <dbl> <chr>           <dbl>        <dbl>          <dbl>     <dbl>
+    ##  1   842302 M                18.0         10.4          123.      1001 
+    ##  2   842517 M                20.6         17.8          133.      1326 
+    ##  3 84300903 M                19.7         21.2          130       1203 
+    ##  4 84348301 M                11.4         20.4           77.6      386.
+    ##  5 84358402 M                20.3         14.3          135.      1297 
+    ##  6   843786 M                12.4         15.7           82.6      477.
+    ##  7   844359 M                18.2         20.0          120.      1040 
+    ##  8 84458202 M                13.7         20.8           90.2      578.
+    ##  9   844981 M                13           21.8           87.5      520.
+    ## 10 84501001 M                12.5         24.0           84.0      476.
+    ## # ... with 559 more rows, and 26 more variables: smoothness_mean <dbl>,
+    ## #   compactness_mean <dbl>, concavity_mean <dbl>, concave_points_mean <dbl>,
+    ## #   symmetry_mean <dbl>, fractal_dimension_mean <dbl>, radius_se <dbl>,
+    ## #   texture_se <dbl>, perimeter_se <dbl>, area_se <dbl>, smoothness_se <dbl>,
+    ## #   compactness_se <dbl>, concavity_se <dbl>, concave_points_se <dbl>,
+    ## #   symmetry_se <dbl>, fractal_dimension_se <dbl>, radius_worst <dbl>,
+    ## #   texture_worst <dbl>, perimeter_worst <dbl>, area_worst <dbl>, ...
+
+### Task 2.3: Further selection of research question and data
+
+Based on the above exercise and more in-depth knowledge about my dataset
+now, I further select the following two questions:
+
+1.  **Can a binary (malignant or benign) classification model be
+    generated with the given variables and dataset size?**
+
+In report 3, additional thought needs to be put in terms of
+precision-recall, so performance evaluation is more robust given false
+positive is better than false negative in this situation.
+
+I have selected this as the primary question because it is the
+culminating exercise that can provide the most utility from analysing
+this data.
+
+2.  **What variable(s) can be used to model the response?**
+
+I have selected this as the second question because it is a requisite
+pre-cursor to the primary question. Moreover, the model performance will
+be heavily dictated by the set of features selected.
+
+The other two questions were less important to further investigate as
+they will already be intrinsically included in the model selection,
+training, and tuning.
+
+**Data set:** As discussed above, I need to drop all of the ten ’\_se’
+cols:
+
+``` r
+(cancer_final <- cancer_sample %>%
+  select(-radius_se, -texture_se, -perimeter_se, -area_se, -smoothness_se, -compactness_se, -concavity_se, -concave_points_se, -symmetry_se, -fractal_dimension_se) %>%
+  arrange(diagnosis) %>%  # Arranging for better organization
+  select(-ID) %>%   # Removing original ID column as number is non-consistent format
+  mutate(ID = row_number()) %>%  # Adding consistent ID column
+  select(ID, everything()))      # Moveing ID column as first col
+```
+
+    ## # A tibble: 569 x 22
+    ##       ID diagnosis radius_mean texture_mean perimeter_mean area_mean
+    ##    <int> <chr>           <dbl>        <dbl>          <dbl>     <dbl>
+    ##  1     1 B               13.5          14.4           87.5      566.
+    ##  2     2 B               13.1          15.7           85.6      520 
+    ##  3     3 B                9.50         12.4           60.3      274.
+    ##  4     4 B               13.0          18.4           82.6      524.
+    ##  5     5 B                8.20         16.8           51.7      202.
+    ##  6     6 B               12.0          14.6           78.0      449.
+    ##  7     7 B               13.5          22.3           86.9      561 
+    ##  8     8 B               11.8          21.6           74.7      428.
+    ##  9     9 B               13.6          16.3           87.2      572.
+    ## 10    10 B               11.9          18.2           75.7      438.
+    ## # ... with 559 more rows, and 16 more variables: smoothness_mean <dbl>,
+    ## #   compactness_mean <dbl>, concavity_mean <dbl>, concave_points_mean <dbl>,
+    ## #   symmetry_mean <dbl>, fractal_dimension_mean <dbl>, radius_worst <dbl>,
+    ## #   texture_worst <dbl>, perimeter_worst <dbl>, area_worst <dbl>,
+    ## #   smoothness_worst <dbl>, compactness_worst <dbl>, concavity_worst <dbl>,
+    ## #   concave_points_worst <dbl>, symmetry_worst <dbl>,
+    ## #   fractal_dimension_worst <dbl>
+
+My dataset is well formed and tidy, and does not have any missing
+values; hence does not require any further manipulation to be used on
+report3. However, to meet the instruction requiremtns, I hypothetically
+manipulate data below to showcase familiarity using other functions, as
+asked:
+
+``` r
+(cancer_final%>%
+  filter(diagnosis=="B")) # Selecting only observations associated to 'benign' diagnosis class
+```
+
+    ## # A tibble: 357 x 22
+    ##       ID diagnosis radius_mean texture_mean perimeter_mean area_mean
+    ##    <int> <chr>           <dbl>        <dbl>          <dbl>     <dbl>
+    ##  1     1 B               13.5          14.4           87.5      566.
+    ##  2     2 B               13.1          15.7           85.6      520 
+    ##  3     3 B                9.50         12.4           60.3      274.
+    ##  4     4 B               13.0          18.4           82.6      524.
+    ##  5     5 B                8.20         16.8           51.7      202.
+    ##  6     6 B               12.0          14.6           78.0      449.
+    ##  7     7 B               13.5          22.3           86.9      561 
+    ##  8     8 B               11.8          21.6           74.7      428.
+    ##  9     9 B               13.6          16.3           87.2      572.
+    ## 10    10 B               11.9          18.2           75.7      438.
+    ## # ... with 347 more rows, and 16 more variables: smoothness_mean <dbl>,
+    ## #   compactness_mean <dbl>, concavity_mean <dbl>, concave_points_mean <dbl>,
+    ## #   symmetry_mean <dbl>, fractal_dimension_mean <dbl>, radius_worst <dbl>,
+    ## #   texture_worst <dbl>, perimeter_worst <dbl>, area_worst <dbl>,
+    ## #   smoothness_worst <dbl>, compactness_worst <dbl>, concavity_worst <dbl>,
+    ## #   concave_points_worst <dbl>, symmetry_worst <dbl>,
+    ## #   fractal_dimension_worst <dbl>
+
+``` r
+(cancer_final%>%
+  filter(diagnosis=="M", radius_mean > 20)) # Selecting only observations associated to 'malignant' diagnosis class with radius_mean greater than 20
+```
+
+    ## # A tibble: 45 x 22
+    ##       ID diagnosis radius_mean texture_mean perimeter_mean area_mean
+    ##    <int> <chr>           <dbl>        <dbl>          <dbl>     <dbl>
+    ##  1   359 M                20.6         17.8           133.      1326
+    ##  2   362 M                20.3         14.3           135.      1297
+    ##  3   378 M                21.2         23.0           137.      1404
+    ##  4   413 M                20.2         24.0           144.      1245
+    ##  5   414 M                25.2         24.9           172.      1878
+    ##  6   421 M                20.3         23.0           132.      1264
+    ##  7   425 M                22.3         19.7           153.      1509
+    ##  8   430 M                24.2         20.2           166.      1761
+    ##  9   444 M                23.3         22.0           152.      1686
+    ## 10   450 M                27.2         21.9           182.      2250
+    ## # ... with 35 more rows, and 16 more variables: smoothness_mean <dbl>,
+    ## #   compactness_mean <dbl>, concavity_mean <dbl>, concave_points_mean <dbl>,
+    ## #   symmetry_mean <dbl>, fractal_dimension_mean <dbl>, radius_worst <dbl>,
+    ## #   texture_worst <dbl>, perimeter_worst <dbl>, area_worst <dbl>,
+    ## #   smoothness_worst <dbl>, compactness_worst <dbl>, concavity_worst <dbl>,
+    ## #   concave_points_worst <dbl>, symmetry_worst <dbl>,
+    ## #   fractal_dimension_worst <dbl>
