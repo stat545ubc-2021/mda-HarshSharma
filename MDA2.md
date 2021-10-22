@@ -43,12 +43,12 @@ Following are the research questions formulated in Report1:
 2.  **Is data distribution/characteristics comparable between the benign
     and malignant classes?**
 
-3.  **What variable(s) have the strongest correlations to the response
-    variable?** Which next leads us to finding the optimized set of
-    variables having the highest model performance. This inherently
-    involves analyzing the three associated columns for the same
-    parameter (example: radius\_mean, radius\_se, radius\_worst) in
-    order to minimize redundancy.
+3.  **What variable(s) can be used to model the response?** Which next
+    leads us to finding the optimized set of variables having the
+    highest model performance. This inherently involves analyzing the
+    three associated columns for the same parameter (example:
+    radius\_mean, radius\_se, radius\_worst) in order to minimize
+    redundancy.
 
 4.  **Identifying what variable(s) contributes to the highest model
     sensitivity**. In this problem setting it is better to have a false
@@ -65,8 +65,8 @@ attempted per research question.
 
 #### Question1 - Generating binary classification model
 
-Computing the summary statistic of numeric variable ‘radius\_mean’
-across the categorical variable ‘diagnosis’:
+(Pt 1) Computing the summary statistic of numeric variable
+‘radius\_mean’ across the categorical variable ‘diagnosis’:
 
 ``` r
 # First grouping by diagnosis
@@ -83,10 +83,10 @@ cancer_sample %>%
     ## 1 B         6.981-17.85  12.1   12.2  1.78
     ## 2 M         10.95-28.11  17.5   17.3  3.20
 
-Graphing mean\_radius with at least two geom layers:
+(Pt 5) Graphing mean\_radius with at least two geom layers:
 
 ``` r
-# Using classic theme to maximize pixed-info ratio per best practices 
+# Using classic theme to maximize pixel-info ratio per best practices 
 cancer_sample %>%
   ggplot(aes(diagnosis, radius_mean))+
   geom_boxplot(width=0.2)+
@@ -97,12 +97,14 @@ cancer_sample %>%
 ![](MDA2_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 The above results clearly indicate discernible difference in variable
-‘radius\_mean’ across begnin and malignant diagnosis. This is strong
+‘radius\_mean’ across benign and malignant diagnosis. This is strong
 indicator that binary classification is possible.
 
-#### Question2 - Comparing begnin and malignant data distribution
+*Note: Classification model will be generated as part of Report3*
 
-Computing the number of observations for categorical variable
+#### Question2 - Comparing benign and malignant data distribution
+
+(Pt 2) Computing the number of observations for categorical variable
 ‘diagnosis’:
 
 ``` r
@@ -118,7 +120,7 @@ cancer_sample %>%
     ## 1 B           357
     ## 2 M           212
 
-Plotting graph of choice:
+Plotting graph of choice, to examine is there is class imbalance:
 
 ``` r
 cancer_sample %>%
@@ -132,14 +134,232 @@ cancer_sample %>%
 
 ![](MDA2_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
-The above graph is appropriate for the research question2. However,
-additional graph is plotted since the instructions require logarithmic
-axis scale:
+(Pt 6) The above graph is appropriate for the research question2.
+However, an additional graph is plotted below since the instructions
+require logarithmic axis scale. Logarithmic scale is appropriate when
+order of magnitude difference is present between values, thus we select
+variable ‘cancavity\_mean’ which has the highest order of magnitude
+present; \~600x.
 
 ``` r
 cancer_sample %>%
-  ggplot()+
-  geom_point()
+  arrange(radius_mean) %>%
+  ggplot(aes(x=radius_mean, y=concavity_mean))+
+  geom_point(aes(color=diagnosis), alpha=0.2)+
+  theme_classic()+
+  scale_y_continuous("Concavity (mean)", trans="log10", labels = scales::label_scientific())+
+  annotation_logticks(sides = "l")
 ```
 
+    ## Warning: Transformation introduced infinite values in continuous y-axis
+
+![](MDA2_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+The above graph-being not a straight line-and having fairly distinct
+regions for diagnosis class, delineates valuable insight that
+radius\_mean and concavity\_mean do not have high co-llinearity. Thus
+add variance to model which can benefit from multivariate analysis.
+
+#### Question3 - Variable relationship w.r.t. response
+
+(Pt 3) For effective classification, We will need to compute how other
+variables are correlated to the response as well. First, we will
+continue with above variable ‘concavity\_mean’ as an example to
+demonstrate and fulfill report instructions. This numeric variable has a
+wide range and is a good candidate for categorization into buckets. Then
+in next report, we will summarize for all variables.
+
+``` r
+# Adding column for categorization of 'concavity_mean' into 4 buckets
+cancer_categ <- cancer_sample %>%
+  mutate(concavity_mean_level = case_when(concavity_mean<0.04 ~ "Low",
+                                         concavity_mean<0.08 ~ "Normal",
+                                         concavity_mean<0.12 ~ "High",
+                                         TRUE ~ "Very High"))
+```
+
+Re-plotting using categorized variable ‘concavity\_mean\_levels’:
+
+``` r
+# Using factors for visual appeal by having ascending order in bar proportion
+cancer_categ %>%
+  mutate(concavity_mean_level= factor(concavity_mean_level, levels = c("Low","Normal","High","Very High"))) %>%
+  ggplot(aes(x = concavity_mean_level, fill=diagnosis))+
+  geom_bar(position = "fill")+
+  labs(y="Proportion")+
+  theme_classic()
+```
+
+![](MDA2_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+(Pt 8) We will continue to explore the independent variable relationship
+with response. Now using histograms, with different bin sizes, for
+another variable ‘concave\_points\_mean’:
+
+``` r
+#Bin size count is 20
+cancer_sample %>%
+  ggplot(aes(x = concave_points_mean, color=diagnosis))+
+  geom_histogram(fill="white", bins = 20)+
+  theme_classic()
+```
+
+![](MDA2_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+``` r
+#Bin size count is 30
+cancer_sample %>%
+  ggplot(aes(x = concave_points_mean, color=diagnosis))+
+  geom_histogram(fill="white", bins = 30)+
+  theme_classic()
+```
+
+![](MDA2_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+``` r
+#Bin size count is 60
+cancer_sample %>%
+  ggplot(aes(x = concave_points_mean, color=diagnosis))+
+  geom_histogram(fill="white", bins = 60)+
+  theme_classic()
+```
+
+![](MDA2_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+Thus we can see that even though there is overlap between the two
+classes, there is still considerable separation that variable
+‘concave\_points\_mean’ provides for bifurcation.
+
+Additionally, bins=60 is the best as it is more detailed and doesn’t
+overly smooth the multimodal peaks in data, which is the case with
+bins=20. Bins=30 is also similar in smoothness to bins=60, however lacks
+some details in the intersecting region.
+
+#### Question4 - Relationship among closely related variables
+
+(Pt 1) As mentioned above, this question has been updated since report1,
+and we will examine the relationship across the three closely related
+variables such as: ‘radius\_mean’, ‘radius\_se’, and ‘radius\_worst’.
+The intention is to evaluate if there is high collinearity which can
+assit in feature selection in report 3.
+
+*Note: (Pt 4) is not much applicable to this dataset, therefore
+repeating (pt 1) for this excercise:*
+
+As in the above case with ‘radius\_mean’, we first use summary
+statistics to check if ‘radius\_se’ and ‘radius\_worst’ are relevant
+independent variables:
+
+``` r
+# Analyzing variable 'radius_se'
+
+cancer_sample %>%
+  group_by(diagnosis) %>%
+  summarize(min_value=min(radius_se), max_value=max(radius_se), mean=mean(radius_se,na.rm=TRUE),median=median(radius_se), sd=sd(radius_se)) %>%
+  unite(range, min_value, max_value, sep="-")
+```
+
+    ## # A tibble: 2 x 5
+    ##   diagnosis range          mean median    sd
+    ##   <chr>     <chr>         <dbl>  <dbl> <dbl>
+    ## 1 B         0.1115-0.8811 0.284  0.258 0.113
+    ## 2 M         0.1938-2.873  0.609  0.547 0.345
+
+``` r
+# Analyzing variable 'radius_worst'
+
+cancer_sample %>%
+  group_by(diagnosis) %>%
+  summarize(min_value=min(radius_worst), max_value=max(radius_worst), mean=mean(radius_worst,na.rm=TRUE),median=median(radius_worst), sd=sd(radius_worst)) %>%
+  unite(range, min_value, max_value, sep="-")
+```
+
+    ## # A tibble: 2 x 5
+    ##   diagnosis range        mean median    sd
+    ##   <chr>     <chr>       <dbl>  <dbl> <dbl>
+    ## 1 B         7.93-19.82   13.4   13.4  1.98
+    ## 2 M         12.84-36.04  21.1   20.6  4.28
+
+We observe good distinction for mean and median values across the
+diagnostic classes, and thus proceed to plot (Pt 7) the density graphs
+and use alpha transparency to see the distribution intersections:
+
+``` r
+# For variable 'radius_mean'
+
+cancer_sample %>%
+  ggplot(aes(radius_mean))+
+  geom_density(aes(fill=diagnosis, alpha=0.3))+
+  theme_minimal()
+```
+
+![](MDA2_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+``` r
+# For variable 'radius_se'
+
+cancer_sample %>%
+  ggplot(aes(radius_se))+
+  geom_density(aes(fill=diagnosis, alpha=0.3))+
+  theme_minimal()
+```
+
+![](MDA2_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+``` r
+# For variable 'radius_worst'
+
+cancer_sample %>%
+  ggplot(aes(radius_worst))+
+  geom_density(aes(fill=diagnosis, alpha=0.3))+
+  theme_minimal()
+```
+
+![](MDA2_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+
+Since ‘radius\_worst’ and ‘radius\_mean’ seem to outperform
+‘radius\_se’, we now proceed to check the correlation between them and
+drop ‘radius\_se’.
+
+``` r
+cancer_sample %>%
+  ggplot(aes(x=radius_mean, y=radius_worst))+
+  geom_point(size=0.7, alpha=0.1)+
+  geom_smooth()
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+
+![](MDA2_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+Visually, We can see high degree of correlation at the lower range, with
+standard error increasing as the range increases. Since there is
+variance, it is recommended to carry both these variables forward for
+further analysis in report 3, in consideration of including in the model
+features.
+
 ### Task1.3: Learning
+
+In summary, I have systematically examined:
+
+-   The dataset at a high level (noting there are no missing values).
+
+-   The various variables present and the possibility for them to act as
+    features
+
+-   The relationship between various independent variables that indicate
+    a good performing model is possible
+
+I am now certain of the research questions (1 question was updated).
+Most interesting result was obtained by comparing the two classification
+groups; which highlighted linear relationships within the group but
+differed in rate of change compared intra-group.
+
+**Next steps:**
+
+-   Repeated some of the above steps for other variables and summarize
+    outcomes quantitatively
+
+-   Use statistical model and set parameters using the outcomes from
+    above step to answer the central research question1 (binary
+    classification)
