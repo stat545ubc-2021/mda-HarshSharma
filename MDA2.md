@@ -175,12 +175,33 @@ in next report, we will summarize for all variables.
 ``` r
 # Adding column for categorization of 'concavity_mean' into 4 buckets
 
-cancer_categ <- cancer_sample %>%
+(cancer_categ <- cancer_sample %>%
   mutate(concavity_mean_level = case_when(concavity_mean<0.04 ~ "Low",
                                          concavity_mean<0.08 ~ "Normal",
                                          concavity_mean<0.12 ~ "High",
-                                         TRUE ~ "Very High"))
+                                         TRUE ~ "Very High")))
 ```
+
+    ## # A tibble: 569 x 33
+    ##          ID diagnosis radius_mean texture_mean perimeter_mean area_mean
+    ##       <dbl> <chr>           <dbl>        <dbl>          <dbl>     <dbl>
+    ##  1   842302 M                18.0         10.4          123.      1001 
+    ##  2   842517 M                20.6         17.8          133.      1326 
+    ##  3 84300903 M                19.7         21.2          130       1203 
+    ##  4 84348301 M                11.4         20.4           77.6      386.
+    ##  5 84358402 M                20.3         14.3          135.      1297 
+    ##  6   843786 M                12.4         15.7           82.6      477.
+    ##  7   844359 M                18.2         20.0          120.      1040 
+    ##  8 84458202 M                13.7         20.8           90.2      578.
+    ##  9   844981 M                13           21.8           87.5      520.
+    ## 10 84501001 M                12.5         24.0           84.0      476.
+    ## # ... with 559 more rows, and 27 more variables: smoothness_mean <dbl>,
+    ## #   compactness_mean <dbl>, concavity_mean <dbl>, concave_points_mean <dbl>,
+    ## #   symmetry_mean <dbl>, fractal_dimension_mean <dbl>, radius_se <dbl>,
+    ## #   texture_se <dbl>, perimeter_se <dbl>, area_se <dbl>, smoothness_se <dbl>,
+    ## #   compactness_se <dbl>, concavity_se <dbl>, concave_points_se <dbl>,
+    ## #   symmetry_se <dbl>, fractal_dimension_se <dbl>, radius_worst <dbl>,
+    ## #   texture_worst <dbl>, perimeter_worst <dbl>, area_worst <dbl>, ...
 
 Re-plotting using categorized variable ‘concavity\_mean\_levels’:
 
@@ -504,35 +525,9 @@ cols:
 
 My dataset is well formed and tidy, and does not have any missing
 values; hence does not require any further manipulation to be used on
-report3. However, to meet the instruction requiremtns, I hypothetically
+report3. However, to meet the instruction requirements, I hypothetically
 manipulate data below to showcase familiarity using other functions, as
 asked:
-
-``` r
-(cancer_final%>%
-  filter(diagnosis=="B")) # Selecting only observations associated to 'benign' diagnosis class
-```
-
-    ## # A tibble: 357 x 22
-    ##       ID diagnosis radius_mean texture_mean perimeter_mean area_mean
-    ##    <int> <chr>           <dbl>        <dbl>          <dbl>     <dbl>
-    ##  1     1 B               13.5          14.4           87.5      566.
-    ##  2     2 B               13.1          15.7           85.6      520 
-    ##  3     3 B                9.50         12.4           60.3      274.
-    ##  4     4 B               13.0          18.4           82.6      524.
-    ##  5     5 B                8.20         16.8           51.7      202.
-    ##  6     6 B               12.0          14.6           78.0      449.
-    ##  7     7 B               13.5          22.3           86.9      561 
-    ##  8     8 B               11.8          21.6           74.7      428.
-    ##  9     9 B               13.6          16.3           87.2      572.
-    ## 10    10 B               11.9          18.2           75.7      438.
-    ## # ... with 347 more rows, and 16 more variables: smoothness_mean <dbl>,
-    ## #   compactness_mean <dbl>, concavity_mean <dbl>, concave_points_mean <dbl>,
-    ## #   symmetry_mean <dbl>, fractal_dimension_mean <dbl>, radius_worst <dbl>,
-    ## #   texture_worst <dbl>, perimeter_worst <dbl>, area_worst <dbl>,
-    ## #   smoothness_worst <dbl>, compactness_worst <dbl>, concavity_worst <dbl>,
-    ## #   concave_points_worst <dbl>, symmetry_worst <dbl>,
-    ## #   fractal_dimension_worst <dbl>
 
 ``` r
 (cancer_final%>%
