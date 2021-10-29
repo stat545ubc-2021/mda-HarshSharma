@@ -1,0 +1,27 @@
+---
+title: "Mini Data Analysis: Report 3"
+author: "Harsh Sharma"
+date: "28/10/2021"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview
+This report continues the exploratory data analysis performed in Report 1 and 2 on the 'cancer_dataset' chosen from the `datateacher` package. Incremental effort will be placed in exploring in more detail the dataset in a fashion that will lead to generating insights to answer the research questions.
+
+## Set-up
+First we need to load the following two packages:
+
+```{r, message=FALSE}
+# Installing packages if missing, required only once
+# install.packages("devtools")
+# devtools::install_github("UBC-MDS/datateachr")
+
+#library(datateachr)
+#library(tidyverse)
+```
+
+## Task1: Processing and Summarizing Data
