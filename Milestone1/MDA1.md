@@ -666,11 +666,9 @@ cancer_sample %>%
   geom_density(aes(fill=diagnosis, alpha=0.3))
 ```
 
-![](MDA1_files/figure-gfm/unnamed-chunk-23-1.png)<!-- --> It is
-interesting to note that there is a correlation between radius\_mean and
-diagnosis classification. However, since there is also a significant
-overlap in values across the classifications it means we need to add
-other appropriate variables to our model.
+![](MDA1_files/figure-gfm/unnamed-chunk-23-1.png)<!-- --> 
+
+It is interesting to note that there is a correlation between radius\_mean and diagnosis classification. However, since there is also a significant overlap in values across the classifications it means we need to add other appropriate variables to our model.
 
 #### 2.1.4.a: Exploring the relashionship between two variables ‘radius\_mean’ and ‘symmetry\_mean’
 
@@ -701,9 +699,9 @@ cancer_sample %>%
   geom_point(aes(colour=diagnosis, size=0.5, alpha=0.2))
 ```
 
-![](MDA1_files/figure-gfm/unnamed-chunk-25-1.png)<!-- --> It can be seen
-that there is a strong relationship (i.e. correlation) between
-‘radius\_mean’ and ‘concave\_points\_mean’.
+![](MDA1_files/figure-gfm/unnamed-chunk-25-1.png)<!-- --> 
+
+It can be seen that there is a strong relationship (i.e. correlation) between ‘radius\_mean’ and ‘concave\_points\_mean’.
 
 #### 2.1.6: Using boxplot to examine frequency of variable ‘area\_mean’
 

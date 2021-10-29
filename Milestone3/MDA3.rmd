@@ -1,0 +1,135 @@
+---
+title: "Mini Data Analysis: Report 3"
+author: "Harsh Sharma"
+date: "28/10/2021"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview
+This report continues the exploratory data analysis performed in Report 1 and 2 on the 'cancer_dataset' chosen from the `datateacher` package. Incremental effort has been placed in exploring the dataset in a fashion that will lead to generating insights. In this culminating report, the results are further improved - enabling the answering of research questions.
+
+## Set-up
+First we need to load the following two packages:
+
+```{r, message=FALSE}
+# Installing packages if missing, required only once
+# install.packages("devtools")
+# devtools::install_github("UBC-MDS/datateachr")
+
+library(datateachr)
+library(tidyverse)
+library(forcats)
+library(here)
+```
+
+Following are the two research questions continued forward from report 2:
+
+1. Can a binary (malignant or benign) classification model be generated with the given variable(s) and data set size?
+
+2. What variable(s) can be used to model the response?
+
+## Exercise 1: Special Data Types
+
+### Task 1: Plotting using reordering of factors
+Incidentally, I already performed this task in report 2 (task 1.2, question 3). Therefore, this time I will re-perform the task with a different variable because that contributes knowledge in regards to my 2<sup>nd</sup> research question around identifying independent variables.
+
+Using the final data set created in the end of report2:
+
+```{r}
+# From report 2 we know that '_se' columns do not contribute to our research questions and hence 10 columns will be dropped
+
+(cancer_final <- cancer_sample %>%
+  select(-radius_se, -texture_se, -perimeter_se, -area_se, -smoothness_se, -compactness_se, -concavity_se, -concave_points_se, -symmetry_se, -fractal_dimension_se) %>%
+  arrange(diagnosis) %>%  # Arranging for better organization
+  select(-ID) %>%   # Removing original ID column as number is non-consistent format
+  mutate(ID = row_number()) %>%  # Adding consistent ID column
+  select(ID, everything()))      # Moving ID column as first col
+```
+
+Now, creating 5 categories for the variable 'concave_points_mean' numerical data:
+```{r}
+# Adding column for categorization of 'concavity_mean' into 5 buckets
+(cancer_categorical <- cancer_final %>%
+  mutate(concave_points_mean_level = case_when(concave_points_mean<0.04 ~ "Very Low",
+                                         concave_points_mean<0.08 ~ "Low",
+                                         concave_points_mean<0.12 ~ "Normal",
+                                         concave_points_mean<0.16 ~ "High",
+                                         TRUE ~ "Very High")))
+```
+
+
+Plotting using categorized variable 'concavity_mean_levels':
+
+```{r, message=FALSE}
+# Using factors for visual appeal by having ascending order in bar proportion
+
+cancer_categorical %>%
+  ggplot(aes(x = concave_points_mean_level, fill=diagnosis))+
+  geom_bar(position = "fill")+
+  labs(y="Proportion")+
+  theme_classic()
+```
+
+As observed, the x-axis, by default is alphabetically arranged. This should be arranged differently to better communicate the visual insights. Since we plot categorical data, we will use factors for re-alignment as follows: 
+
+```{r, message=FALSE}
+# First converting the 'char' col into a factor col
+
+cancer_categorical$concave_points_mean_level <- as.factor(cancer_categorical$concave_points_mean_level)
+head(cancer_categorical$concave_points_mean_level)
+```
+
+```{r, message=FALSE}
+# Using factors for visual appeal by having ascending order in bar proportion
+
+cancer_categorical <- cancer_categorical %>%
+    mutate(concave_points_mean_level = fct_reorder(concave_points_mean_level, radius_mean, mean))
+
+cancer_categorical %>%
+    ggplot(aes(x = concave_points_mean_level, fill=diagnosis))+
+    geom_bar(position = "fill")+
+    labs(y="Proportion")+
+    theme_classic()
+```
+
+I intentionally did not manually set the factor order from very low to very high, or vice versa, because it should be dynamic. Not only is manual setting static but the user also needs to first plot and see if the intended visual outcome is achieved. In this case, the manual ordering also works however is not best practice. In stead, I use relationship with other variable 'radius_mean' to achieve the ordering. This is logical as in previous report it is shown that 'radius_mean' is correlated to malignant/benign diagnosis.
+
+Above plot delineates as we proceed from very low to very high categories of 'concave_mean_points' the proportion of malign diagnosis also increases. Thus, 'concave_mean_points' is also a good predictor for diagnosis.
+
+### Task 2: Combining of factor levels
+
+In the above plot, we can see there is no difference in high and very high category as they have the exact proportion. That is, no incremental value is added by using the extra pixels and space on the plot. To make it cleaner, we combine the aforementioned categories using 'fct_collapse'. By grouping these two categories together we have not impacted the relay of information.
+
+```{r, message=FALSE}
+# Collapsing factors for visual appeal
+
+cancer_categorical %>%
+        mutate(concave_points_mean_level = fct_collapse(concave_points_mean_level, "Above Normal" = c("High", "Very High"))) %>%
+    ggplot(aes(x = concave_points_mean_level, fill=diagnosis))+
+    geom_bar(position = "fill")+
+    labs(y="Proportion")+
+    theme_classic()
+```
+
+## Exercise 2: Modelling
+
+Selection is as follows:
+  - **Research question:** Can a binary (malignant or benign) classification model be generated with the given variable(s)?
+  - **Variable of interest:** Diagnosis (malignant or benign)
+  
+### Task 2.1: Fitting data to a model
+
+
+### Task 2.2: Predicting using the fitted model
+
+
+## Exercise 3: Reading and writing data
+
+### Task 3.1: Writing data to csv file
+
+
+### Task 3.2: Saving and reading model object
