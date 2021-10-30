@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 This report continues the exploratory data analysis performed in Report 1 and 2 on the 'cancer_dataset' chosen from the `datateacher` package. Incremental effort has been placed in exploring the dataset in a fashion that will lead to generating insights. In this culminating report, the results are further improved - enabling the answering of research questions.
 
 ## Set-up
-First we need to load the following two packages:
+First we need to load the following packages:
 
 ```{r, message=FALSE}
 # Installing packages if missing, required only once
@@ -26,7 +26,7 @@ library(forcats)
 library(here)
 ```
 
-Following are the two research questions continued forward from report 2:
+Two research questions continued forward from report 2 are:
 
 1. Can a binary (malignant or benign) classification model be generated with the given variable(s) and data set size?
 
@@ -35,12 +35,13 @@ Following are the two research questions continued forward from report 2:
 ## Exercise 1: Special Data Types
 
 ### Task 1: Plotting using reordering of factors
-Incidentally, I already performed this task in report 2 (task 1.2, question 3). Therefore, this time I will re-perform the task with a different variable because that contributes knowledge in regards to my 2<sup>nd</sup> research question around identifying independent variables.
+Incidentally, I already performed this task in report 2 (task 1.2, question 3), but set the levels manually. Therefore, this time I will re-perform the task with a different variable because that contributes knowledge in regards to my 2<sup>nd</sup> research question around identifying independent variables, and use `forcats` package.
 
 Using the final data set created in the end of report2:
 
 ```{r}
-# From report 2 we know that '_se' columns do not contribute to our research questions and hence 10 columns will be dropped
+# From report 2 we know that '_se' columns do not contribute to our research questions
+# Hence 10 columns will be dropped
 
 (cancer_final <- cancer_sample %>%
   select(-radius_se, -texture_se, -perimeter_se, -area_se, -smoothness_se, -compactness_se, -concavity_se, -concave_points_se, -symmetry_se, -fractal_dimension_se) %>%
@@ -50,7 +51,8 @@ Using the final data set created in the end of report2:
   select(ID, everything()))      # Moving ID column as first col
 ```
 
-Now, creating 5 categories for the variable 'concave_points_mean' numerical data:
+Now, creating 5 categories for the numerical variable 'concave_points_mean':
+
 ```{r}
 # Adding column for categorization of 'concavity_mean' into 5 buckets
 (cancer_categorical <- cancer_final %>%
@@ -60,13 +62,9 @@ Now, creating 5 categories for the variable 'concave_points_mean' numerical data
                                          concave_points_mean<0.16 ~ "High",
                                          TRUE ~ "Very High")))
 ```
-
-
-Plotting using categorized variable 'concavity_mean_levels':
+Now plotting using the newly created categorical variable 'concavity_mean_levels':
 
 ```{r, message=FALSE}
-# Using factors for visual appeal by having ascending order in bar proportion
-
 cancer_categorical %>%
   ggplot(aes(x = concave_points_mean_level, fill=diagnosis))+
   geom_bar(position = "fill")+
@@ -78,7 +76,6 @@ As observed, the x-axis, by default is alphabetically arranged. This should be a
 
 ```{r, message=FALSE}
 # First converting the 'char' col into a factor col
-
 cancer_categorical$concave_points_mean_level <- as.factor(cancer_categorical$concave_points_mean_level)
 head(cancer_categorical$concave_points_mean_level)
 ```
@@ -96,13 +93,15 @@ cancer_categorical %>%
     theme_classic()
 ```
 
-I intentionally did not manually set the factor order from very low to very high, or vice versa, because it should be dynamic. Not only is manual setting static but the user also needs to first plot and see if the intended visual outcome is achieved. In this case, the manual ordering also works however is not best practice. In stead, I use relationship with other variable 'radius_mean' to achieve the ordering. This is logical as in previous report it is shown that 'radius_mean' is correlated to malignant/benign diagnosis.
+I intentionally did not manually set the factor order from very low to very high, or vice versa, because it should be dynamic. Not only is manual setting static but the user also needs to first plot and see if the intended visual outcome is achieved (uniformly trending proportions). In this particular case, the manual ordering as stated above also works, however, is not best practice. 
 
-Above plot delineates as we proceed from very low to very high categories of 'concave_mean_points' the proportion of malign diagnosis also increases. Thus, 'concave_mean_points' is also a good predictor for diagnosis.
+Instead, **I use relationship with other variable 'radius_mean' to achieve the ordering**. This is logical, as in previous report it is shown that 'radius_mean' is correlated to malignant/benign diagnosis.
+
+Above plot delineates **as we proceed from very low to very high categories of 'concave_mean_points' the proportion of malign diagnosis also increases**. Thus, 'concave_mean_points' is also a good predictor for diagnosis.
 
 ### Task 2: Combining of factor levels
 
-In the above plot, we can see there is no difference in high and very high category as they have the exact proportion. That is, no incremental value is added by using the extra pixels and space on the plot. To make it cleaner, we combine the aforementioned categories using 'fct_collapse'. By grouping these two categories together we have not impacted the relay of information.
+In the above plot, we can see there is no difference in high and very high category as they have the exact proportion. That is, no incremental value is added by using the extra pixels and space on the plot. To make it cleaner, we combine the aforementioned categories using 'fct_collapse'. By grouping these two categories together we have not impacted the relay of information to the reader.
 
 ```{r, message=FALSE}
 # Collapsing factors for visual appeal
@@ -123,12 +122,11 @@ Selection is as follows:
   - **Variable of interest:** Diagnosis (malignant or benign)
   
 ### Task 2.1: Fitting data to a model
-We will use binary logistic regression for our classification task.
+Binary logistic regression is used for the classification task. We will first split the data set into training and test set so that we are able to predict on unseen data in the next task.
 
 ```{r, message=FALSE}
 # Need to convert diagnosis values for "M" and "B" to 1 and 0 respectively
-# So that glm model can except numerical data appropriate for logit regression
-
+# So that glm model can except numerical data required for logit regression
 cancer_categorical<-cancer_categorical %>%
   mutate(diagnosis_numerical = case_when(diagnosis == "M" ~ 1,
                                          diagnosis == "B" ~ 0,))
@@ -141,22 +139,59 @@ training_set <- cancer_categorical[training_index, ]
 test_set <- cancer_categorical[-training_index, ]
 
 # Fitting the model using training set
-model <- glm(diagnosis_numerical ~ radius_mean, data = training_set, family = "binomial")
+model <- glm(diagnosis_numerical ~ radius_mean + concave_points_mean, data = training_set, family = "binomial")
 
-#Printing model to screen as default
+#Printing model output to screen
 model
-
-#Using broom to print summarizing information about model
-broom::tidy(model)
 ```
 
 ### Task 2.2: Predicting using the fitted model
 
+Now the above fitted model is used on test set to predict the 'Y' i.e. the diagnosis.
+
+Then, the model performance is assessed through the following statistics:
+
+  - Accuracy
+  - Precision
+  - Recall
+  
+Lastly, the fitted model is also analyzed using `broom` package to validate the assumptions previously made for independent variables through their p-values.
+
+```{r, message=FALSE}
+# Predicting on the 20% test set
+prediction_temp <- predict(model, test_set, type = "response") #Using type=response to output probabilities in place of logit data
+prediction <- round(prediction_temp) #Rounding off value to match numerical diagnosis classification
+
+#Renaming vector values to align with initial diagnosis naming of "M" and "B"
+prediction[prediction==0] <- "B"
+prediction[prediction==1] <- "M"
+
+#Printing results in a tabular form
+(confusion_matrix_table <-table("Predicted Values" = prediction, "Reference Values" = test_set$diagnosis))
+
+# Converting the above table to a tibble
+(confusion_matrix <- as_tibble(confusion_matrix_table))
+```
+
+Calculating statistic values manually:
+
+  - **Accuracy:** 83.1%
+  - **Precision:** 84.8%
+  - **Recall:** 90.7%
+  
+These are decent results for a simple model used.
+
+```{r, message=FALSE}
+# Summarizing information about model to validate initial indicative results from plots in report 2 and 3.
+(ans2.2 <- broom::tidy(model))
+```
+
+Using `broom` package, we can see above that both independent variables have p-values < 0.05, and thus positively influence the response variable 'diagnosis'. This validates we have correctly selected our set of variables.
 
 ## Exercise 3: Reading and writing data
 
 ### Task 3.1: Writing data to csv file
-Using the below summary table from report 2, we save it to output folder as a csv.
+Using the summary table (below) from report 2, we save it to output folder as a csv.
 
 ```{r, message=FALSE}
 # Generating the summary table, first grouping by diagnosis
@@ -178,4 +213,18 @@ dir(here::here("output"))
 
 ### Task 3.2: Saving and reading model object
 
-We will save in 'Output' folder using functions 'saveRDS()' and 'readRDS()'
+We will save model in 'Output' folder using function 'saveRDS()' and then load it back using 'readRDS()' function.
+
+```{r, message=FALSE}
+# Saving model object
+saveRDS(model, file = here::here("Output", "classification-model.rds"))
+
+# File check
+dir(here::here("output"))
+
+# Loading the saved model
+classifier <- readRDS(here::here("Output", "classification-model.rds"))
+
+# Printing the loaded object to check                      
+classifier
+```
