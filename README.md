@@ -7,7 +7,6 @@ This is a individual project for UBC course *[STAT 545A](https://stat545.stat.ub
   * Glancing different datasets and choosing one through iteratively exploration
   * Familiarization with chosen data set
   * Articulating 4 research questions around the chosen data set
-  * Generate reproducible and clean analysis report
 - [x] Mini data analysis 2
   * Manipulating and summarizing data
   * Tidying and untidying data
@@ -19,7 +18,7 @@ This is a individual project for UBC course *[STAT 545A](https://stat545.stat.ub
   
 
 ## Project Folders and Files
-The project files are located in their respective folders for the three milestones. The 'Output' folder stores saved data. Important files are:
+The project has four main folders. Files are located in their respective folders for the three milestones. The *[Output](/Output)* folder stores saved data. Important files are:
 1. *[MDA1](/Milestone1/MDA1.md)*: Report1 rendered in Github friendly format.
 2. *[MDA1.rmd](/Milestone1/MDA1.rmd)*: Corresponding file containing the `R` code for the report1 analysis.
 3. *[MDA2](/Milestone2/MDA2.md)*: Report2 rendered in Github friendly format.
