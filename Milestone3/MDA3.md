@@ -157,14 +157,131 @@ cancer_categorical %>%
 
 ![](MDA3_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
-I intentionally did not manually set the factor levels in order from
-very low to very high, or vice versa, because it should be dynamic.
-Setting it manually is static and the user also needs to plot and see if
+I intentionally did not manually set the factor order from very low to
+very high, or vice versa, because it should be dynamic. Not only is
+manual setting static but the user also needs to first plot and see if
 the intended visual outcome is achieved. In this case, the manual
-ordering also works however required user check. In stead, I use
+ordering also works however is not best practice. In stead, I use
 relationship with other variable ‘radius\_mean’ to achieve the ordering.
 This is logical as in previous report it is shown that ‘radius\_mean’ is
-correlated to malignant/benign diagnosis. Above plot delineates: as we
-proceed from very low to very high categories of ‘concave\_mean\_points’
-the proportion of malign diagnosis also increases. Thus,
-‘concave\_mean\_points’ is also a good predictor for diagnosis.
+correlated to malignant/benign diagnosis.
+
+Above plot delineates as we proceed from very low to very high
+categories of ‘concave\_mean\_points’ the proportion of malign diagnosis
+also increases. Thus, ‘concave\_mean\_points’ is also a good predictor
+for diagnosis.
+
+### Task 2: Combining of factor levels
+
+In the above plot, we can see there is no difference in high and very
+high category as they have the exact proportion. That is, no incremental
+value is added by using the extra pixels and space on the plot. To make
+it cleaner, we combine the aforementioned categories using
+‘fct\_collapse’. By grouping these two categories together we have not
+impacted the relay of information.
+
+``` r
+# Collapsing factors for visual appeal
+
+cancer_categorical %>%
+        mutate(concave_points_mean_level = fct_collapse(concave_points_mean_level, "Above Normal" = c("High", "Very High"))) %>%
+    ggplot(aes(x = concave_points_mean_level, fill=diagnosis))+
+    geom_bar(position = "fill")+
+    labs(y="Proportion")+
+    theme_classic()
+```
+
+![](MDA3_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+## Exercise 2: Modelling
+
+Selection is as follows:
+
+-   **Research question:** Can a binary (malignant or benign)
+    classification model be generated with the given variable(s)?
+-   **Variable of interest:** Diagnosis (malignant or benign)
+
+### Task 2.1: Fitting data to a model
+
+We will use binary logistic regression as our classifier.
+
+``` r
+# Need to convert diagnosis values for "M" and "B" to 1 and 0 respectively, so that glm model can except numerical data appropriate for logit regression
+
+cancer_categorical<-cancer_categorical %>%
+  mutate(diagnosis_numerical = case_when(diagnosis == "M" ~ 1,
+                                         diagnosis == "B" ~ 0,))
+
+# Creating test-train (20%-80%) sets by randomly splitting data
+count_train <- round(0.8 * nrow(cancer_categorical)) 
+set.seed(100)
+training_index <- sample(1:nrow(cancer_categorical), count_train)
+training_set <- cancer_categorical[training_index, ]
+test_set <- cancer_categorical[-training_index, ]
+
+# Fitting the model using training set
+model <- glm(diagnosis_numerical ~ radius_mean, data = training_set, family = "binomial")
+
+#Printing model to screen as default
+model
+```
+
+    ## 
+    ## Call:  glm(formula = diagnosis_numerical ~ radius_mean, family = "binomial", 
+    ##     data = training_set)
+    ## 
+    ## Coefficients:
+    ## (Intercept)  radius_mean  
+    ##     -14.959        1.019  
+    ## 
+    ## Degrees of Freedom: 454 Total (i.e. Null);  453 Residual
+    ## Null Deviance:       600.3 
+    ## Residual Deviance: 272.1     AIC: 276.1
+
+``` r
+#Using broom to print summarizing information about model
+broom::tidy(model)
+```
+
+    ## # A tibble: 2 x 5
+    ##   term        estimate std.error statistic  p.value
+    ##   <chr>          <dbl>     <dbl>     <dbl>    <dbl>
+    ## 1 (Intercept)   -15.0      1.45     -10.3  6.22e-25
+    ## 2 radius_mean     1.02     0.103      9.94 2.86e-23
+
+### Task 2.2: Predicting using the fitted model
+
+## Exercise 3: Reading and writing data
+
+### Task 3.1: Writing data to csv file
+
+Using the below summary table from report 2, we save it to output folder
+as a csv.
+
+``` r
+# Generating the summary table, first grouping by diagnosis
+# Using dyplr::unite() to output range as asked in question
+
+(task3.1 <- cancer_sample %>%
+  group_by(diagnosis) %>%
+  summarize(min_value=min(radius_mean), max_value=max(radius_mean), mean=mean(radius_mean,na.rm=TRUE),median=median(radius_mean), sd=sd(radius_mean)) %>%
+  unite(range, min_value, max_value, sep="-"))
+```
+
+    ## # A tibble: 2 x 5
+    ##   diagnosis range        mean median    sd
+    ##   <chr>     <chr>       <dbl>  <dbl> <dbl>
+    ## 1 B         6.981-17.85  12.1   12.2  1.78
+    ## 2 M         10.95-28.11  17.5   17.3  3.20
+
+``` r
+# Saving as a csv
+write_csv(task3.1, here::here("Output", "summary_table.csv"))
+
+# File check
+dir(here::here("output"))
+```
+
+    ## [1] "summary_table.csv"
+
+### Task 3.2: Saving and reading model object

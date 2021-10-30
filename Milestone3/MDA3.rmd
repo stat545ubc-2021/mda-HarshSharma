@@ -118,11 +118,37 @@ cancer_categorical %>%
 ## Exercise 2: Modelling
 
 Selection is as follows:
+
   - **Research question:** Can a binary (malignant or benign) classification model be generated with the given variable(s)?
   - **Variable of interest:** Diagnosis (malignant or benign)
   
 ### Task 2.1: Fitting data to a model
+We will use binary logistic regression for our classification task.
 
+```{r, message=FALSE}
+# Need to convert diagnosis values for "M" and "B" to 1 and 0 respectively
+# So that glm model can except numerical data appropriate for logit regression
+
+cancer_categorical<-cancer_categorical %>%
+  mutate(diagnosis_numerical = case_when(diagnosis == "M" ~ 1,
+                                         diagnosis == "B" ~ 0,))
+
+# Creating test-train (20%-80%) sets by randomly splitting data
+count_train <- round(0.8 * nrow(cancer_categorical)) 
+set.seed(100)
+training_index <- sample(1:nrow(cancer_categorical), count_train)
+training_set <- cancer_categorical[training_index, ]
+test_set <- cancer_categorical[-training_index, ]
+
+# Fitting the model using training set
+model <- glm(diagnosis_numerical ~ radius_mean, data = training_set, family = "binomial")
+
+#Printing model to screen as default
+model
+
+#Using broom to print summarizing information about model
+broom::tidy(model)
+```
 
 ### Task 2.2: Predicting using the fitted model
 
@@ -130,6 +156,26 @@ Selection is as follows:
 ## Exercise 3: Reading and writing data
 
 ### Task 3.1: Writing data to csv file
+Using the below summary table from report 2, we save it to output folder as a csv.
 
+```{r, message=FALSE}
+# Generating the summary table, first grouping by diagnosis
+# Using dyplr::unite() to output range as asked in question
+
+(task3.1 <- cancer_sample %>%
+  group_by(diagnosis) %>%
+  summarize(min_value=min(radius_mean), max_value=max(radius_mean), mean=mean(radius_mean,na.rm=TRUE),median=median(radius_mean), sd=sd(radius_mean)) %>%
+  unite(range, min_value, max_value, sep="-"))
+```
+
+```{r, message=FALSE}
+# Saving as a csv
+write_csv(task3.1, here::here("Output", "summary_table.csv"))
+
+# File check
+dir(here::here("output"))
+```
 
 ### Task 3.2: Saving and reading model object
+
+We will save in 'Output' folder using functions 'saveRDS()' and 'readRDS()'
