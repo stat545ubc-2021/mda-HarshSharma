@@ -666,9 +666,12 @@ cancer_sample %>%
   geom_density(aes(fill=diagnosis, alpha=0.3))
 ```
 
-![](MDA1_files/figure-gfm/unnamed-chunk-23-1.png)<!-- --> 
+![](MDA1_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
 
-It is interesting to note that there is a correlation between radius\_mean and diagnosis classification. However, since there is also a significant overlap in values across the classifications it means we need to add other appropriate variables to our model.
+It is interesting to note that there is a correlation between
+radius\_mean and diagnosis classification. However, since there is also
+a significant overlap in values across the classifications it means we
+need to add other appropriate variables to our model.
 
 #### 2.1.4.a: Exploring the relashionship between two variables ‘radius\_mean’ and ‘symmetry\_mean’
 
@@ -699,9 +702,10 @@ cancer_sample %>%
   geom_point(aes(colour=diagnosis, size=0.5, alpha=0.2))
 ```
 
-![](MDA1_files/figure-gfm/unnamed-chunk-25-1.png)<!-- --> 
+![](MDA1_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
 
-It can be seen that there is a strong relationship (i.e. correlation) between ‘radius\_mean’ and ‘concave\_points\_mean’.
+It can be seen that there is a strong relationship (i.e. correlation)
+between ‘radius\_mean’ and ‘concave\_points\_mean’.
 
 #### 2.1.6: Using boxplot to examine frequency of variable ‘area\_mean’
 
@@ -715,9 +719,9 @@ cancer_sample %>%
   geom_boxplot(width=0.3)
 ```
 
-![](MDA1_files/figure-gfm/unnamed-chunk-26-1.png)<!-- --> \#\#\#\#
-2.1.8: Using density plot to explore related variables ‘radius\_mean’,
-‘radius\_se’, and ‘radius\_worst’
+![](MDA1_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+
+#### 2.1.8: Using density plot to explore related variables ‘radius\_mean’, ‘radius\_se’, and ‘radius\_worst’
 
 -   Density plots are very applicable for my dataset as they compare the
     dependant variables nicely across the two classification outputs.
@@ -730,9 +734,10 @@ cancer_sample %>%
   geom_density(aes(fill=diagnosis, alpha=0.3))
 ```
 
-![](MDA1_files/figure-gfm/unnamed-chunk-27-1.png)<!-- --> Having an
-almost identical distribution overlapping on each other, shows us that
-‘fractal\_dimension\_mean’ is not a strong dependant variable.
+![](MDA1_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+
+Having an almost identical distribution overlapping on each other, shows
+us that ‘fractal\_dimension\_mean’ is not a strong dependant variable.
 
 ## Task 3: Research Questions
 
