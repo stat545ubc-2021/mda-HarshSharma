@@ -217,6 +217,7 @@ cancer_sample %>%
   geom_density(aes(fill=diagnosis, alpha=0.3))
   
 ```
+
 It is interesting to note that there is a correlation between radius_mean and diagnosis classification. However, since there is also a significant overlap in values across the classifications it means we need to add other appropriate variables to our model.
 
 
@@ -242,6 +243,7 @@ cancer_sample %>%
   geom_point(aes(colour=diagnosis, size=0.5, alpha=0.2))
   
 ```
+
 It can be seen that there is a strong relationship (i.e. correlation) between 'radius_mean' and 'concave_points_mean'.
 
 #### 2.1.6: Using boxplot to examine frequency of variable 'area_mean' 
@@ -254,6 +256,7 @@ cancer_sample %>%
   geom_boxplot(width=0.3)
   
 ```
+
 #### 2.1.8: Using density plot to explore related variables 'radius_mean', 'radius_se', and 'radius_worst' 
 
 - Density plots are very applicable for my dataset as they compare the dependant variables nicely across the two classification outputs. Thus using another density plot to investigate suitability of variable 'fractal_dimension-mean'.
@@ -264,6 +267,7 @@ cancer_sample %>%
   geom_density(aes(fill=diagnosis, alpha=0.3))
   
 ```
+
 Having an almost identical distribution overlapping on each other, shows us that 'fractal_dimension_mean' is not a strong dependant variable. 
 
 ## Task 3: Research Questions

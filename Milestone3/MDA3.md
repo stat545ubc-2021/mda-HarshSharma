@@ -343,7 +343,8 @@ write_csv(task3.1, here::here("Output", "summary_table.csv"))
 dir(here::here("output"))
 ```
 
-    ## [1] "classification-model.rds" "summary_table.csv"
+    ## [1] "classification-model.rds" "README.md"               
+    ## [3] "summary_table.csv"
 
 ### Task 3.2: Saving and reading model object
 
@@ -358,7 +359,8 @@ saveRDS(model, file = here::here("Output", "classification-model.rds"))
 dir(here::here("output"))
 ```
 
-    ## [1] "classification-model.rds" "summary_table.csv"
+    ## [1] "classification-model.rds" "README.md"               
+    ## [3] "summary_table.csv"
 
 ``` r
 # Loading the saved model
